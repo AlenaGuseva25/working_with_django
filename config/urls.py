@@ -6,4 +6,5 @@ app_name = 'catalog'
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("catalog/", include("catalog.urls", namespace="catalog")),
+    path("", include("catalog.urls", namespace="catalog")),
 ]
