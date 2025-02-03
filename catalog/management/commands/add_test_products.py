@@ -17,14 +17,12 @@ class Command(BaseCommand):
         category, _ = Category.objects.get_or_create(name='Тестовая категория')
         self.stdout.write(self.style.SUCCESS(f'Используется категория: {category.name}'))
 
-        # Список тестовых продуктов
         test_products = [
             {'name': 'Test Product 1', 'description': 'Описание продукта 1', 'category': category, 'purchase_price': 100},
             {'name': 'Test Product 2', 'description': 'Описание продукта 2', 'category': category, 'purchase_price': 200},
             {'name': 'Test Product 3', 'description': 'Описание продукта 3', 'category': category, 'purchase_price': 300},
         ]
 
-        # Создание тестовых продуктов
         for product in test_products:
             product_obj, created = Product.objects.get_or_create(
                 name=product['name'],
