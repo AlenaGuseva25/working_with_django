@@ -1,10 +1,8 @@
-from django.contrib import admin
 from django.urls import path
 from .views import HomeCatalogView, ContactsCatalogView, ProductListView, ProductDetailView
 
 
 app_name = 'catalog'
-
 
 urlpatterns = [
     path('', HomeCatalogView.as_view(), name='home'),
