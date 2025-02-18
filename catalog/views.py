@@ -1,30 +1,32 @@
+from django.views import View
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
+from django.urls import reverse_lazy
+from django.views.generic import ListView, DetailView, View
 
 
 from catalog.models import Product
 
 
-
-def home_catalog(request):
-    products = Product.objects.all()
-    context = {'products': products}
-    return render(request, 'catalog/home.html', context)
-
-
-def contacts_catalog(request):
-    return render(request, 'catalog/contacts.html')
+class HomeCatalogView(ListView):
+    model = Product
+    template_name = 'catalog/home.html'
+    context_object_name = 'products'
 
 
-def product_list(request):
-    products = Product.objects.all()
-    context = {'products': products,}
-    return render(request, 'catalog/product_list.html', context)
+class ContactsCatalogView(View):
+    def get(self, request):
+        return render(request, 'catalog/contacts.html')
 
 
-def product_detail(request, pk):
-    product = get_object_or_404(Product, pk=pk)
-    context = {
-        'product' : product,
-    }
-    return render(request, 'catalog/product_detail.html', context=context)
+class ProductListView(ListView):
+    model = Product
+    template_name = 'catalog/product_list.html'
+    context_object_name = 'products'
+
+
+class ProductDetailView(DetailView):
+    model = Product
+    template_name = 'catalog/product_detail.html'
+    context_object_name = 'product'
+    pk_url_kwarg = 'pk'
