@@ -16,7 +16,7 @@
         </p>
 
         {% if blog_post.preview_image %}
-          <img src="" alt="{{ blog_post.title }}" class="img-fluid mb-3">
+           <img src="{{ blog_post.preview_image.url }}" alt="{{ blog_post.title }}" class="img-fluid mb-3">
         {% endif %}
 
         <a href="{% url 'blog:blogpost_update' pk=blog_post.pk %}" class="btn btn-primary">Редактировать</a>
