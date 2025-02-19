@@ -4,7 +4,7 @@ from django.db import models
 class Blog(models.Model):
     title = models.CharField(max_length=250)
     content = models.TextField()
-    preview_image = models.ImageField(upload_to="blog_preview/")
+    preview_image = models.ImageField(upload_to="blog_preview/", blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     is_published = models.BooleanField(default=False)
     view_count = models.IntegerField(default=0)
