@@ -45,9 +45,12 @@ class ProductForm(forms.ModelForm):
 
     def clean_purchase_price(self):
         purchase_price = self.cleaned_data.get('purchase_price')
+        if purchase_price is None:
+            raise forms.ValidationError('Цена не может быть пустой')
         if purchase_price <= 0:
             raise forms.ValidationError('Цена не должна быть отрицательной или равной 0')
         return purchase_price
+
 
 
     def validate_forbidden_words(self, value):
