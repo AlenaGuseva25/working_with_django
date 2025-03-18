@@ -8,6 +8,7 @@ from .models import User
 from config.settings import EMAIL_HOST_USER
 
 
+
 class RegisterView(CreateView):
     model = User  # Указываем модель
     template_name = 'registration/register.html'
