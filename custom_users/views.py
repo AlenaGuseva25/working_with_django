@@ -5,12 +5,12 @@ from .forms import RegisterForm
 from django.core.mail import send_mail
 from django.conf import settings
 from .models import User
+
 from config.settings import EMAIL_HOST_USER
 
 
-
 class RegisterView(CreateView):
-    model = User  # Указываем модель
+    model = User
     template_name = 'registration/register.html'
     form_class = RegisterForm
     success_url = reverse_lazy('catalog:product_list')
