@@ -5,15 +5,25 @@
 {% block content %}
 <div class="container mt-5">
     <div class="card">
-        {% if product.img %}
+        {% if product.image %}
             <img src="" class="card-img-top" alt="{{ product.name }}">
         {% endif %}
         <div class="card-body">
             <h1 class="card-title">{{ product.name }}</h1>
             <p class="card-text">Категория: {{ product.category.name }}</p>
-            <p class="card-text">Описание: {{ product.descriptions }}</p>
+            <p class="card-text">Описание: {{ product.description }}</p>
             <p class="card-text">Цена: {{ product.purchase_price }}</p>
             <a href="#" class="btn btn-primary">Купить</a>
+
+            {% if user == product.owner or perms.catalog.delete_product %}
+                <a href="{% url 'catalog:product_update' product.pk %}" class="btn btn-secondary">Редактировать</a>
+                <a href="{% url 'catalog:product_delete' product.pk %}" class="btn btn-danger">Удалить</a>
+            {% endif %}
+
+            {% if perms.catalog.can_unpublish_product and product.is_published %}
+                <a href="{% url 'catalog:product_unpublish' product.pk %}" class="btn btn-warning">Снять с публикации</a>
+            {% endif %}
+
         </div>
     </div>
     {% include "catalog/footer.html" %}

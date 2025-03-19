@@ -21,8 +21,8 @@ class RegisterView(CreateView):
         return super().form_valid(form)
 
     def send_welcome_email(self, user_email):
-        subject = 'Добро пожаловать'
-        message = 'Спасибо за регистрацию!'
-        from_email = settings.EMAIL_HOST_USER
+        subject = 'Добро пожаловать',
+        message = 'Спасибо за регистрацию!',
+        from_email = settings.EMAIL_HOST_USER,
         recipient_list = [user_email]
         send_mail(subject, message, from_email, recipient_list)
