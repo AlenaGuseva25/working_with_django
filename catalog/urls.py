@@ -1,3 +1,4 @@
+from . import views
 from django.urls import path
 from catalog.views import (
     HomeCatalogView,
@@ -21,4 +22,6 @@ urlpatterns = [
     path('products/create/', ProductCreateView.as_view(), name='product_create'),
     path('products/update/<int:pk>/', ProductUpdateView.as_view(), name='product_update'),
     path('products/delete/<int:pk>/', ProductDeleteView.as_view(), name='product_delete'),
+    path('', ProductListView.as_view(), name='product_list'),
+    path('home/', HomeCatalogView.as_view(), name='home'),
 ]
