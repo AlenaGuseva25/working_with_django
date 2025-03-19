@@ -1,0 +1,10 @@
+{% extends 'catalog/catalog_base.html' %}
+{% block content %}
+    <h1>Редактирование продукта</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Сохранить</button>
+        <a href="{% url 'catalog:products' %}">Отмена</a>
+    </form>
+{% endblock %}

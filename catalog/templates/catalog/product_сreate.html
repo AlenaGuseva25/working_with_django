@@ -2,7 +2,7 @@
 
 {% block content %}
     <div class="container">
-        <h1>{% if form.instance.pk %}Редактировать продукт{% else %}Создать продукт{% endif %}</h1>
+        {% if form.instance.pk %}Редактировать продукт{% else %}Создать продукт{% endif %}
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             <div style="position: absolute; left: -9999px;">

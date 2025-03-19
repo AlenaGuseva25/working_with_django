@@ -16,12 +16,12 @@
             <a href="#" class="btn btn-primary">Купить</a>
 
             {% if user == product.owner or perms.catalog.delete_product %}
-                <a href="{% url 'catalog:product_update' product.pk %}" class="btn btn-secondary">Редактировать</a>
-                <a href="{% url 'catalog:product_delete' product.pk %}" class="btn btn-danger">Удалить</a>
+                <a href="{% url 'catalog:product_update' pk=product.pk %}" class="btn btn-secondary">Редактировать</a>
+                <a href="{% url 'catalog:product_delete' pk=product.pk %}" class="btn btn-danger">Удалить</a>
             {% endif %}
 
             {% if perms.catalog.can_unpublish_product and product.is_published %}
-                <a href="{% url 'catalog:product_unpublish' product.pk %}" class="btn btn-warning">Снять с публикации</a>
+                <a href="{% url 'catalog:product_unpublish' pk=product.pk %}" class="btn btn-warning">Снять с публикации</a>
             {% endif %}
 
         </div>

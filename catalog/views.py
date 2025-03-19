@@ -47,8 +47,11 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
 class ProductUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Product
     form_class = ProductForm
-    template_name = 'catalog/product_create.html'
+    template_name = 'catalog/product_update.html'
     success_url = reverse_lazy('catalog:products')
+
+    def get_success_url(self):
+        return reverse_lazy("catalog:products")
 
     def test_func(self):
         product = self.get_object()
