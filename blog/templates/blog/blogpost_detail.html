@@ -19,8 +19,11 @@
            <img src="{{ blog_post.preview_image.url }}" alt="{{ blog_post.title }}" class="img-fluid mb-3">
         {% endif %}
 
-        <a href="{% url 'blog:blogpost_update' pk=blog_post.pk %}" class="btn btn-primary">Редактировать</a>
-        <a href="{% url 'blog:blogpost_delete' pk=blog_post.pk %}" class="btn btn-danger">Удалить</a>
+        {% if user == blog_post.owner or user.has_perm('catalog.can_unpublish_product') %}
+          <a href="{% url 'blog:blogpost_update' pk=blog_post.pk %}" class="btn btn-primary">Редактировать</a>
+          <a href="{% url 'blog:blogpost_delete' pk=blog_post.pk %}" class="btn btn-danger">Удалить</a>
+        {% endif %}
+
         <a href="{% url 'blog:blogpost_list' %}" class="btn btn-secondary">Назад к списку</a>
 
       </div>

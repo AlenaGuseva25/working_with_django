@@ -15,8 +15,11 @@
             <p class="card-text">Цена: {{ product.purchase_price }}</p>
             <a href="#" class="btn btn-primary">Купить</a>
 
-            {% if user == product.owner or perms.catalog.delete_product %}
+            {% if user == product.owner or perms.catalog.can_unpublish_product %}
                 <a href="{% url 'catalog:product_update' pk=product.pk %}" class="btn btn-secondary">Редактировать</a>
+            {% endif %}
+
+            {% if user == product.owner %}
                 <a href="{% url 'catalog:product_delete' pk=product.pk %}" class="btn btn-danger">Удалить</a>
             {% endif %}
 

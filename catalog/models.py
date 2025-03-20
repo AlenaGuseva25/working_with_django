@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.conf import settings
 
+import custom_users.models
+from config.settings import AUTH_USER_MODEL
 
 
 class Category(models.Model):
@@ -31,7 +33,7 @@ class Product(models.Model):
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Дата последнего изменения')
     is_published = models.BooleanField(default=False, verbose_name='Статус публикации')
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='products', verbose_name='Владелец',
-                              null=True, blank=True)
+                              blank=True, null=True)
 
     class Meta:
         verbose_name = "Продукт"
