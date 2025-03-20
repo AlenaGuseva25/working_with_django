@@ -4,10 +4,16 @@
 <div class="container mt-5">
     <h1 class="mb-4">Удаление "{{ object.title }}"</h1>
     <p>Вы уверены, что хотите удалить эту статью?</p>
-    <form method="post">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-danger">Удалить</button>
-        <a href="{% url 'blog:blogpost_list' %}" class="btn btn-secondary">Отмена</a>
-    </form>
+
+    {% if user == object.owner or user.has_perm('catalog.can_unpublish_product') %}
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Удалить</button>
+            <a href="{% url 'blog:blogpost_list' %}" class="btn btn-secondary">Отмена</a>
+        </form>
+    {% else %}
+        <p class="text-danger">У вас нет прав для удаления этой статьи.</p>
+        <a href="{% url 'blog:blogpost_list' %}" class="btn btn-secondary">Назад к списку</a>
+    {% endif %}
 </div>
 {% endblock %}

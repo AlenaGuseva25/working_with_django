@@ -1,4 +1,8 @@
 from django import forms
+from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.contrib.auth.models import PermissionsMixin
+
+from custom_users.models import User
 from .models import Product
 
 FORBIDDEN_WORDS = [
@@ -18,7 +22,8 @@ class ProductForm(forms.ModelForm):
     honeypot = forms.CharField(required=False, widget=forms.HiddenInput,label='Оставить пустым')
     class Meta:
         model = Product
-        fields = ['name', 'description', 'purchase_price', 'category', 'image']
+        fields = ['name', 'description', 'purchase_price', 'category', 'image', 'is_published']
+
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
