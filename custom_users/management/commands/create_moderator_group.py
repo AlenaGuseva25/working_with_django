@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import Group, Permission
-
+from django.apps import apps
 
 class Command(BaseCommand):
     help = 'Создание группы Модератор продуктов'
@@ -14,7 +14,15 @@ class Command(BaseCommand):
             content_type__model='product'
         )
 
-        group.permissions.add(can_unpublish_product)
+        app_label = apps.get_containing_app_config(self.__module__).label
+
+        delete_product = Permission.objects.get(
+            codename='delete_product',
+            content_type__app_label='catalog',
+            content_type__model='product'
+        )
+
+        group.permissions.add(can_unpublish_product, delete_product)
 
         if created:
             self.stdout.write(self.style.SUCCESS('Группа "Модератор продуктов" создана и права назначены.'))
