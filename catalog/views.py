@@ -77,6 +77,15 @@ class ProductDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         product = self.get_object()
         return self.request.user == product.owner or self.request.user.has_perm('catalog.delete_product')
 
+class ProductUnpublishView(PermissionRequiredMixin, View):
+    permission_required = 'catalog.can_unpublish_product'
+
+    def get(self, request, pk):
+        product = get_object_or_404(Product, pk=pk)
+        product.is_published = False
+        product.save()
+        return redirect('catalog:product', pk=pk)
+
 
     def get_object(self):
         return get_object_or_404(Product, pk=self.kwargs['pk'])
