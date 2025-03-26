@@ -7,7 +7,7 @@
 <div class="album py-5 bg-body-tertiary">
     <div class="container">
 
-        {# Кнопка "Создать продукт" для всех авторизованных пользователей, кроме модераторов #}
+
         {% if user.is_authenticated and not user|is_moderator %}
             <a href="{% url 'catalog:product_create' %}" class="btn btn-success mb-3">Создать продукт</a>
         {% endif %}
@@ -17,7 +17,7 @@
             <div class="col">
                 <div class="card shadow-sm">
                     {% if product.image %}
-                        <img src="" class="bd-placeholder-img card-img-top" width="100%" height="225" alt="{{product.name}}">
+                        <img src="{{ product.image.url }}" class="bd-placeholder-img card-img-top" width="100%" height="225" alt="{{product.name}}">
                     {% endif %}
                     <div class="card-body">
                         <p class="card-text">{{ product.name }}</p>
