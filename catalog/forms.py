@@ -22,7 +22,7 @@ class ProductForm(forms.ModelForm):
     honeypot = forms.CharField(required=False, widget=forms.HiddenInput,label='Оставить пустым')
     class Meta:
         model = Product
-        fields = ['name', 'description', 'purchase_price', 'category', 'image', 'is_published']
+        fields = ['name', 'description', 'purchase_price', 'category', 'image']
 
 
     def __init__(self, *args, **kwargs):
@@ -65,3 +65,21 @@ class ProductForm(forms.ModelForm):
                 if word in value_lower:
                     raise forms.ValidationError(f'Слово "{word}" недопустимо')
 
+
+class ProductModeratorForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(ProductModeratorForm, self).__init__(*args, **kwargs)
+        self.update_field_attributes()
+
+    class Meta:
+        model = Product
+        fields = ['is_published']
+
+    def update_field_attributes(self):
+        for field_name in self.fields:
+            self.fields[field_name].widget.attrs.update(
+                {
+                    "class": "checkbox",
+                    "placeholder": f"Введите {self.fields[field_name].label.lower()}",
+                }
+            )

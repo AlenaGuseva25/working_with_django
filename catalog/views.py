@@ -1,3 +1,5 @@
+from django.contrib.auth.models import Permission
+from django.core.exceptions import PermissionDenied
 from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 from django.shortcuts import render, get_object_or_404, redirect
@@ -5,8 +7,15 @@ from django.http import HttpResponse, HttpResponseForbidden
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, View, CreateView, UpdateView, DeleteView
 
-from catalog.forms import ProductForm
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+# from .services import get_products_by_category
+from django.core.cache import cache
+
+
+from catalog.forms import ProductForm, ProductModeratorForm
 from catalog.models import Product
+from config.settings import MODERATOR_GROUP
 
 
 class HomeCatalogView(ListView):
@@ -29,7 +38,8 @@ class ProductListView(ListView):
     context_object_name = 'products'
 
     def get_queryset(self):
-        if self.request.user.has_perm('catalog.can_unpublish_product'):
+        user = self.request.user
+        if user.groups.filter(name=MODERATOR_GROUP).exists():
             return Product.objects.all()
         return Product.objects.filter(is_published=True)
 
@@ -40,19 +50,29 @@ class ProductDetailView(DetailView):
     context_object_name = 'product'
     pk_url_kwarg = 'pk'
 
+    def get_object(self):
+        obj = super().get_object()
+        obj.views_count += 1
+        obj.save()
+        return obj
 
-class ProductCreateView(LoginRequiredMixin, CreateView):
+
+class ProductCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = Product
     form_class = ProductForm
     template_name = 'catalog/product_create.html'
     success_url = reverse_lazy('catalog:products')
+
+    def has_permission(self):
+        if not self.request.user.groups.filter(name__in=MODERATOR_GROUP).exists():
+            return self.request.user.is_active
 
     def form_valid(self, form):
         form.instance.owner = self.request.user
         return super().form_valid(form)
 
 
-class ProductUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+class ProductUpdateView(LoginRequiredMixin, UpdateView):
     model = Product
     form_class = ProductForm
     template_name = 'catalog/product_update.html'
@@ -61,12 +81,16 @@ class ProductUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def get_success_url(self):
         return reverse_lazy("catalog:products")
 
-    def test_func(self):
-        product = self.get_object()
-        return self.request.user == product.owner or self.request.user.has_perm('catalog.can_unpublish_product')
+    def get_form_class(self):
+        user = self.request.user
+        if user == self.object.owner:
+            return ProductForm
+        if user.groups.filter(name=MODERATOR_GROUP).exists():
+            return ProductModeratorForm
+        return PermissionDenied
 
 
-class ProductDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+class ProductDeleteView(LoginRequiredMixin, DeleteView):
     model = Product
     template_name = 'catalog/product_confirm_delete.html'
     success_url = reverse_lazy('catalog:products')
@@ -80,9 +104,14 @@ class ProductUnpublishView(PermissionRequiredMixin, View):
 
     def get(self, request, pk):
         product = get_object_or_404(Product, pk=pk)
-        product.is_published = False
-        product.save()
-        return redirect('catalog:product', pk=pk)
+        if product.is_published:
+            product.is_published = False
+            product.save()
+            return redirect('catalog:product', pk=pk)
+        else:
+            product.is_published = True
+            product.save()
+            return redirect('catalog:product', pk=pk)
 
 
     def get_object(self):

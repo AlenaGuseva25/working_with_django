@@ -13,18 +13,23 @@
             <p class="card-text">Категория: {{ product.category.name }}</p>
             <p class="card-text">Описание: {{ product.description }}</p>
             <p class="card-text">Цена: {{ product.purchase_price }}</p>
+            <p class="card-text">Счетчик просмотров: {{ product.views_count }}</p>
             <a href="#" class="btn btn-primary">Купить</a>
 
-            {% if user == product.owner or perms.catalog.can_unpublish_product %}
+            {% if user == product.owner or user.is_moderator %}
                 <a href="{% url 'catalog:product_update' pk=product.pk %}" class="btn btn-secondary">Редактировать</a>
             {% endif %}
 
-            {% if user == product.owner or perms.catalog.delete_product %}
+            {% if user == product.owner or user.is_moderator %}
                 <a href="{% url 'catalog:product_delete' pk=product.pk %}" class="btn btn-danger">Удалить</a>
             {% endif %}
 
-            {% if perms.catalog.can_unpublish_product and product.is_published %}
+            {% if user.is_moderator and product.is_published %}
                 <a href="{% url 'catalog:product_unpublish' pk=product.pk %}" class="btn btn-warning">Снять с публикации</a>
+            {% endif %}
+
+            {% if user.is_moderator and not product.is_published %}
+                <a href="{% url 'catalog:product_unpublish' pk=product.pk %}" class="btn btn-warning">Опубликовать</a>
             {% endif %}
 
         </div>
