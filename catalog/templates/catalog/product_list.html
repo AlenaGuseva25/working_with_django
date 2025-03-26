@@ -1,16 +1,23 @@
 {% extends 'catalog/catalog_base.html' %}
+{% load catalog_tags %}  {# Загрузите пользовательские теги #}
 
 {% block title %}Список товаров{% endblock %}
 
 {% block content %}
 <div class="album py-5 bg-body-tertiary">
     <div class="container">
+
+        {# Кнопка "Создать продукт" для всех авторизованных пользователей, кроме модераторов #}
+        {% if user.is_authenticated and not user|is_moderator %}
+            <a href="{% url 'catalog:product_create' %}" class="btn btn-success mb-3">Создать продукт</a>
+        {% endif %}
+
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
             {% for product in products %}
             <div class="col">
                 <div class="card shadow-sm">
                     {% if product.image %}
-                        <img src="{{ product.image.url }}" class="bd-placeholder-img card-img-top" width="100%" height="225" alt="{{product.name}}">
+                        <img src="" class="bd-placeholder-img card-img-top" width="100%" height="225" alt="{{product.name}}">
                     {% endif %}
                     <div class="card-body">
                         <p class="card-text">{{ product.name }}</p>
