@@ -1,4 +1,8 @@
 from django import forms
+from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.contrib.auth.models import PermissionsMixin
+
+from custom_users.models import User
 from .models import Product
 
 FORBIDDEN_WORDS = [
@@ -19,6 +23,7 @@ class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
         fields = ['name', 'description', 'purchase_price', 'category', 'image']
+
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -60,3 +65,21 @@ class ProductForm(forms.ModelForm):
                 if word in value_lower:
                     raise forms.ValidationError(f'Слово "{word}" недопустимо')
 
+
+class ProductModeratorForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(ProductModeratorForm, self).__init__(*args, **kwargs)
+        self.update_field_attributes()
+
+    class Meta:
+        model = Product
+        fields = ['is_published']
+
+    def update_field_attributes(self):
+        for field_name in self.fields:
+            self.fields[field_name].widget.attrs.update(
+                {
+                    "class": "checkbox",
+                    "placeholder": f"Введите {self.fields[field_name].label.lower()}",
+                }
+            )

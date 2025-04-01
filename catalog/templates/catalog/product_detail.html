@@ -5,15 +5,33 @@
 {% block content %}
 <div class="container mt-5">
     <div class="card">
-        {% if product.img %}
-            <img src="" class="card-img-top" alt="{{ product.name }}">
+        {% if product.image %}
+            <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
         {% endif %}
         <div class="card-body">
             <h1 class="card-title">{{ product.name }}</h1>
             <p class="card-text">Категория: {{ product.category.name }}</p>
-            <p class="card-text">Описание: {{ product.descriptions }}</p>
+            <p class="card-text">Описание: {{ product.description }}</p>
             <p class="card-text">Цена: {{ product.purchase_price }}</p>
+            <p class="card-text">Счетчик просмотров: {{ product.views_count }}</p>
             <a href="#" class="btn btn-primary">Купить</a>
+
+            {% if user == product.owner or user.is_moderator %}
+                <a href="{% url 'catalog:product_update' pk=product.pk %}" class="btn btn-secondary">Редактировать</a>
+            {% endif %}
+
+            {% if user == product.owner or user.is_moderator %}
+                <a href="{% url 'catalog:product_delete' pk=product.pk %}" class="btn btn-danger">Удалить</a>
+            {% endif %}
+
+            {% if user.is_moderator and product.is_published %}
+                <a href="{% url 'catalog:product_unpublish' pk=product.pk %}" class="btn btn-warning">Снять с публикации</a>
+            {% endif %}
+
+            {% if user.is_moderator and not product.is_published %}
+                <a href="{% url 'catalog:product_unpublish' pk=product.pk %}" class="btn btn-warning">Опубликовать</a>
+            {% endif %}
+
         </div>
     </div>
     {% include "catalog/footer.html" %}

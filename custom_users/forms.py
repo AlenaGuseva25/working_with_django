@@ -5,8 +5,8 @@ from .models import User
 
 class RegisterForm(UserCreationForm):
     phone = forms.CharField(max_length=15, required=False, help_text='Необязательное поле. Введите номер телефона')
-    username = forms.CharField(max_length=50, required=True)
-    usable_password = None
+    username = forms.CharField(max_length=50, required=False)
+
 
     class Meta(UserCreationForm.Meta):
         model = User
