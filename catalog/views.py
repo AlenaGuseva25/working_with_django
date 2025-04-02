@@ -9,12 +9,15 @@ from django.views.generic import ListView, DetailView, View, CreateView, UpdateV
 
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
-# from .services import get_products_by_category
+from .services import get_products_by_category
 from django.core.cache import cache
+from django.db.models import F
+
 
 
 from catalog.forms import ProductForm, ProductModeratorForm
-from catalog.models import Product
+from catalog.models import Product, Category
+from catalog.services import get_products_by_category
 from config.settings import MODERATOR_GROUP
 
 
@@ -43,6 +46,17 @@ class ProductListView(ListView):
             return Product.objects.all()
         return Product.objects.filter(is_published=True)
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        products = cache.get('product_list')
+        if products is None:
+            products = list(Product.objects.annotate(views_count_display=F('views_count')).filter(
+                is_published=True).order_by('name'))
+            cache.set('product_list', products, timeout=60 * 10)
+        context['products'] = products
+        return context
+
+
 
 class ProductDetailView(DetailView):
     model = Product
@@ -55,6 +69,10 @@ class ProductDetailView(DetailView):
         obj.views_count += 1
         obj.save()
         return obj
+
+    # @method_decorator(cache_page(60 * 5))
+    # def dispatch(self, request, *args, **kwargs):
+    #     return super().dispatch(*args, **kwargs)
 
 
 class ProductCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
@@ -116,3 +134,23 @@ class ProductUnpublishView(PermissionRequiredMixin, View):
 
     def get_object(self):
         return get_object_or_404(Product, pk=self.kwargs['pk'])
+
+
+class ProductByCategoryView(ListView):
+    model = Product
+    template_name = 'catalog/product_by_category.html'
+    context_object_name = 'products'
+
+    def get_queryset(self):
+        self.category = get_object_or_404(Category, name=self.kwargs['category_name'])
+        return get_products_by_category(self.kwargs['category_name'])
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['category'] = self.category
+        return context
+
+def categories_processor(request):
+    "Список категорий в каждом шаблоне"
+    categories = Category.objects.all()
+    return {'categories': categories}
